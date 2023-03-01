@@ -5,7 +5,7 @@ defmodule PaymentServerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", PaymentServerWeb do
+  scope "/" do
     pipe_through :api
 
     forward "/graphql", Absinthe.Plug, schema: PaymentServerWeb.Schema
