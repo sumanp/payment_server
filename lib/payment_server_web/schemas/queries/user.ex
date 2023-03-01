@@ -3,12 +3,6 @@ defmodule PaymentServerWeb.Schemas.Queries.User do
   alias PaymentServerWeb.Resolvers
 
   object :user_queries do
-    field :user, :user do
-      arg(:id, non_null(:id))
-
-      resolve(&Resolvers.User.find/2)
-    end
-
     field :users, list_of(:user) do
       arg(:before, :integer)
       arg(:after, :integer)

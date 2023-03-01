@@ -3,7 +3,7 @@ defmodule PaymentServerWeb.Types.User do
 
   import Absinthe.Resolution.Helpers, only: [dataloader: 2]
 
-  @desc "User with preferences"
+  @desc "User"
   object :user do
     field :id, :id
     field :name, :string
