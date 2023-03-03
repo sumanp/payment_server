@@ -1,6 +1,6 @@
 defmodule PaymentServerWeb.Schemas.Mutations.User do
   use Absinthe.Schema.Notation
-  alias PaymentServer.Resolvers
+  alias PaymentServerWeb.Resolvers
 
   object :user_mutations do
     field :create_user, :user do

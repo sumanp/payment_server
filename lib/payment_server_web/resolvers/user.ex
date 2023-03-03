@@ -6,6 +6,6 @@ defmodule PaymentServerWeb.Resolvers.User do
   end
 
   def find(params, _) do
-    {:ok, []}
+    {:ok, %{}}
   end
 end

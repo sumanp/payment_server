@@ -2,7 +2,7 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
   def all(params, _), do: {:ok, []}
 
   def create(params, _) do
-    {:ok, []}
+    {:ok, %{id: 1, address: "213412r3", currency: "USD", value: 45}}
   end
 
   def find(params, _) do

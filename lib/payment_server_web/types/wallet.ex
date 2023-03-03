@@ -8,6 +8,6 @@ defmodule PaymentServerWeb.Types.Wallet do
     field :id, non_null(:id)
     field :address, :string
     field :currency, :string
-    field :value, :integer
+    field :value, :float
   end
 end

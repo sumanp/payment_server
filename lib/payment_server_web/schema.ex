@@ -6,6 +6,7 @@ defmodule PaymentServerWeb.Schema do
   import_types PaymentServerWeb.Schemas.Queries.User
   import_types PaymentServerWeb.Schemas.Queries.Wallet
   import_types PaymentServerWeb.Schemas.Mutations.User
+  import_types PaymentServerWeb.Schemas.Mutations.Wallet
 
   query do
     import_fields :user_queries
@@ -14,6 +15,7 @@ defmodule PaymentServerWeb.Schema do
 
   mutation do
     import_fields :user_mutations
+    import_fields :wallet_mutations
   end
 
   # def context(ctx) do
