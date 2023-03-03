@@ -5,7 +5,7 @@ defmodule PaymentServerWeb.Types.User do
 
   @desc "User"
   object :user do
-    field :id, :id
+    field :id, non_null(:id)
     field :name, :string
     field :email, :string
   end

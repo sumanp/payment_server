@@ -1,16 +1,19 @@
 defmodule PaymentServerWeb.Schema do
   use Absinthe.Schema
 
-  import_types(PaymentServerWeb.Types.User)
-  import_types(PaymentServerWeb.Schemas.Queries.User)
-  import_types(PaymentServerWeb.Schemas.Mutations.User)
+  import_types PaymentServerWeb.Types.User
+  import_types PaymentServerWeb.Types.Wallet
+  import_types PaymentServerWeb.Schemas.Queries.User
+  import_types PaymentServerWeb.Schemas.Queries.Wallet
+  import_types PaymentServerWeb.Schemas.Mutations.User
 
   query do
-    import_fields(:user_queries)
+    import_fields :user_queries
+    import_fields :wallet_queries
   end
 
   mutation do
-    import_fields(:user_mutations)
+    import_fields :user_mutations
   end
 
   # def context(ctx) do

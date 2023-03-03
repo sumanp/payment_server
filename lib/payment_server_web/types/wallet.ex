@@ -5,7 +5,9 @@ defmodule PaymentServerWeb.Types.Wallet do
 
   @desc "Wallet"
   object :wallet do
-    field :id, :id
+    field :id, non_null(:id)
     field :address, :string
+    field :currency, :string
+    field :value, :integer
   end
 end
