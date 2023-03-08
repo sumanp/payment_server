@@ -8,4 +8,8 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
   def find(params, _) do
     {:ok, %{id: 1, address: "asdadas", currency: "USD", value: 45}}
   end
+
+  def total_worth(params, _) do
+    {:ok, %{currency: "USD", value: 45}}
+  end
 end

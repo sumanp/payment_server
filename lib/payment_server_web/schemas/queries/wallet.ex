@@ -17,5 +17,11 @@ defmodule PaymentServerWeb.Schemas.Queries.Wallet do
 
       resolve(&Resolvers.Wallet.all/2)
     end
+
+    field :total_worth, :total_worth do
+      arg :currency, :string
+
+      resolve(&Resolvers.Wallet.total_worth/2)
+    end
   end
 end

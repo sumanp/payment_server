@@ -10,4 +10,9 @@ defmodule PaymentServerWeb.Types.Wallet do
     field :currency, :string
     field :value, :float
   end
+
+  object :total_worth do
+    field :currency, :string
+    field :value, :float
+  end
 end
