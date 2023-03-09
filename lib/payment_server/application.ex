@@ -5,6 +5,8 @@ defmodule PaymentServer.Application do
 
   use Application
 
+  @supported_currencies Application.fetch_env!(:payment_server, :supported_currencies)
+
   @impl true
   def start(_type, _args) do
     children = [
@@ -16,7 +18,8 @@ defmodule PaymentServer.Application do
       {Phoenix.PubSub, name: PaymentServer.PubSub},
       # Start the Endpoint (http/https)
       PaymentServerWeb.Endpoint,
-      {Absinthe.Subscription, PaymentServerWeb.Endpoint}
+      {Absinthe.Subscription, PaymentServerWeb.Endpoint},
+      {PaymentServer.ExchangeRate, @supported_currencies}
       # Start a worker by calling: PaymentServer.Worker.start_link(arg)
       # {PaymentServer.Worker, arg}
     ]
