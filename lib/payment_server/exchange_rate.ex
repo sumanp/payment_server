@@ -90,10 +90,8 @@ defmodule PaymentServer.ExchangeRate do
     result =
       urls
       |> Task.async_stream(&HTTPoison.get/1)
-      |> Enum.map(fn {:ok, result} -> result end)
-      |> Enum.map(fn {:ok, result} -> result.body end)
-      |> Enum.map(fn x ->
-        res = Jason.decode!(x)
+      |> Enum.map(fn {:ok, {:ok, result}} ->
+        res = Jason.decode!(result.body)
 
         key =
           res["Realtime Currency Exchange Rate"]["1. From_Currency Code"] <>
