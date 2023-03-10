@@ -6,8 +6,9 @@ defmodule PaymentServer.Repo.Migrations.CreateWallets do
       add :address, :string
       add :currency, :string
       add :amount, :integer
-
-      timestamps()
+      add(:user_id, references(:users, on_delete: :delete_all))
     end
+
+    create(index(:wallets, [:user_id]))
   end
 end
