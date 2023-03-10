@@ -8,4 +8,5 @@ config :payment_server,
     "GBP"
   ]
 
-# Application.fetch_env!(:payment_server, :supported_currencies)
+config :money,
+  default_currency: :USD
