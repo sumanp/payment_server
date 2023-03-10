@@ -17,6 +17,10 @@ config :payment_server, PaymentServerWeb.Endpoint,
   pubsub_server: PaymentServer.PubSub,
   live_view: [signing_salt: "UjgD01it"]
 
+config :ecto_shorts,
+  repo: PaymentServer.Repo,
+  error_module: EctoShorts.Actions.Error
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

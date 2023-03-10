@@ -49,7 +49,8 @@ defmodule PaymentServer.MixProject do
       {:absinthe_phoenix, "~> 2.0"},
       {:dataloader, "~> 1.0"},
       {:httpoison, "~> 2.0"},
-      {:money, "~> 1.12"}
+      {:money, "~> 1.12"},
+      {:ecto_shorts, "~> 2.2"}
     ]
   end
 
