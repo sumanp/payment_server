@@ -3,13 +3,7 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
   alias PaymentServer.Accounts.Wallet
 
   def all(params, _) do
-    wallets =
-      PaymentServer.Accounts.list_wallets(params)
-      |> Enum.map(fn x ->
-        %Wallet{x | amount: Money.to_string(x.amount)}
-      end)
-
-    {:ok, wallets}
+    {:ok, PaymentServer.Accounts.list_wallets(params)}
   end
 
   def update(%{id: id} = params, _) do
@@ -17,7 +11,7 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
   end
 
   def find_by_currency(params, _) do
-    {:ok, List.last(Accounts.find_wallet_by_currency(params))}
+    {:ok, Accounts.find_wallet_by_currency(params)}
   end
 
   def create(params, _) do
