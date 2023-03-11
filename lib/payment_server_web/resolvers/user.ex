@@ -1,11 +1,13 @@
 defmodule PaymentServerWeb.Resolvers.User do
-  def all(params, _), do: {:ok, []}
+  alias PaymentServer.Accounts
 
-  def create(params, _) do
-    {:ok, []}
+  def all(params, _), do: {:ok, Accounts.list_users(params)}
+
+  def update(%{id: id} = params, _) do
+    Accounts.update_user(id, params)
   end
 
-  def find(params, _) do
-    {:ok, %{}}
+  def create(params, _) do
+    Accounts.create_user(params)
   end
 end
