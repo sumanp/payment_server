@@ -19,4 +19,9 @@ defmodule PaymentServer.Accounts.Wallet do
     |> cast(attrs, @available_params)
     |> validate_required(@available_params)
   end
+
+  def filter_by_currency(%{user_id: user_id, currency: currency} = _params) do
+    from w in PaymentServer.Accounts.Wallet,
+      where: w.currency == ^currency and w.user_id == ^user_id
+  end
 end

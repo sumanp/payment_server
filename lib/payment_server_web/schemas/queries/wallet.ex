@@ -3,11 +3,11 @@ defmodule PaymentServerWeb.Schemas.Queries.Wallet do
   alias PaymentServerWeb.Resolvers
 
   object :wallet_queries do
-    field :wallet, :wallet do
+    field :wallet_by_currency, :wallet do
       arg :user_id, non_null(:id)
       arg :currency, :string
 
-      resolve(&Resolvers.Wallet.find/2)
+      resolve(&Resolvers.Wallet.find_by_currency/2)
     end
 
     field :wallets, list_of(:wallet) do

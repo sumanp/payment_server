@@ -9,6 +9,7 @@ defmodule PaymentServerWeb.Types.Wallet do
     field :address, :string
     field :currency, :string
     field :amount, :string
+    field :user_id, :integer
   end
 
   object :total_worth do

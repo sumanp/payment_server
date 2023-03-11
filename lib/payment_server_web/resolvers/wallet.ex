@@ -16,6 +16,10 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
     Accounts.update_wallet(id, params)
   end
 
+  def find_by_currency(params, _) do
+    {:ok, List.last(Accounts.find_wallet_by_currency(params))}
+  end
+
   def create(params, _) do
     Accounts.create_wallet(params)
   end
