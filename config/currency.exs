@@ -9,4 +9,5 @@ config :payment_server,
   ]
 
 config :money,
-  default_currency: :USD
+  default_currency: :USD,
+  symbol: false

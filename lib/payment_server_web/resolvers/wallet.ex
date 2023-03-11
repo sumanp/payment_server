@@ -6,7 +6,7 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
     wallets =
       PaymentServer.Accounts.list_wallets(params)
       |> Enum.map(fn x ->
-        %Wallet{x | amount: Money.to_string(x.amount, symbol: false)}
+        %Wallet{x | amount: Money.to_string(x.amount)}
       end)
 
     {:ok, wallets}
