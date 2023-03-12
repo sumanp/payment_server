@@ -26,7 +26,7 @@ defmodule PaymentServer.Accounts do
   end
 
   def find_wallet_by_currency(params) do
-    List.last(Repo.all(Wallet.filter_by_currency(params)))
+    Repo.one(Wallet.filter_by_currency(params))
   end
 
   def update_wallet(id, params) do
