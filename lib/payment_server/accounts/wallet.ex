@@ -11,7 +11,7 @@ defmodule PaymentServer.Accounts.Wallet do
     belongs_to :user, PaymentServer.Accounts.User
   end
 
-  @available_params [:address, :currency, :amount]
+  @available_params [:address, :currency, :amount, :user_id]
 
   @doc false
   def changeset(wallet, attrs) do
