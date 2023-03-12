@@ -23,6 +23,10 @@ defmodule PaymentServer.ExchangeRate do
     GenServer.call(server, {:get_exchange_rate, currency_pair})
   end
 
+  def get_exchange_rates(server \\ @server_name) do
+    GenServer.call(server, {:get_exchange_rates})
+  end
+
   def refresh() do
     GenServer.call(@server_name, :refresh, :infinity)
 
@@ -39,6 +43,10 @@ defmodule PaymentServer.ExchangeRate do
 
   def handle_call({:get_exchange_rate, currency_pair}, _from_pid, state) do
     {:reply, state[:exchange_rate][currency_pair], state}
+  end
+
+  def handle_call({:get_exchange_rates}, _from_pid, state) do
+    {:reply, state[:exchange_rate], state}
   end
 
   @impl true
@@ -62,7 +70,6 @@ defmodule PaymentServer.ExchangeRate do
   # Private/utility methods
 
   defp all_currency_pair(currency_list) do
-    # for x <- currency_list, y <- currency_list, x <= y, do: [x, y]
     currency_list
     |> Enum.flat_map(fn x ->
       currency_list

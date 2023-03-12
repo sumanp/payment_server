@@ -14,12 +14,14 @@ defmodule PaymentServerWeb.Schemas.Queries.Wallet do
       arg :before, :integer
       arg :after, :integer
       arg :first, :integer
+      arg :user_id, :integer
 
       resolve(&Resolvers.Wallet.all/2)
     end
 
     field :total_worth, :total_worth do
       arg :currency, :string
+      arg :user_id, :integer
 
       resolve(&Resolvers.Wallet.total_worth/2)
     end
