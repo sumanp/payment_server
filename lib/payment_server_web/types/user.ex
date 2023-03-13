@@ -9,4 +9,9 @@ defmodule PaymentServerWeb.Types.User do
     field :name, :string
     field :email, :string
   end
+
+  object :transaction do
+    field :status, :string
+    field :message, :string
+  end
 end
