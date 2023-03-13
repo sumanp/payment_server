@@ -1,6 +1,5 @@
 defmodule PaymentServerWeb.Resolvers.User do
   alias PaymentServer.Accounts
-  require Logger
 
   def all(params, _), do: {:ok, Accounts.list_users(params)}
 
@@ -37,7 +36,6 @@ defmodule PaymentServerWeb.Resolvers.User do
       Accounts.update_wallet(from_wallet.id, %{amount: subtract_amount})
       {:ok, %{status: "SUCCESS", message: "Payment sent successfully"}}
     else
-      Logger.warn("Insufficient Funds")
       {:ok, %{status: "ERROR", message: "Insufficient funds"}}
     end
   end

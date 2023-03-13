@@ -2,7 +2,7 @@ defmodule PaymentServer.ExchangeRate do
   use GenServer
   require Logger
 
-  @refresh_interval_ms 1_000
+  @refresh_interval_ms 25_000
   @server_name PaymentServer
 
   # Client
