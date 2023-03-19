@@ -1,8 +1,11 @@
 defmodule PaymentServer.ExchangeRate do
   use GenServer
-  require Logger
 
-  @refresh_interval_ms 25_000
+  require Logger
+  alias PaymentServer.Worth
+  alias PaymentServer.Accounts
+
+  @refresh_interval_ms 20_000
   @server_name PaymentServer
 
   # Client
@@ -13,7 +16,7 @@ defmodule PaymentServer.ExchangeRate do
       |> reject_twin_pair()
       |> pair_keys()
 
-    state = Enum.into(currency_pair, %{}, &{&1, 0})
+    state = Enum.into(currency_pair, %{}, &{&1, "0.00"})
     opts = Keyword.put_new(opts, :name, @server_name)
 
     GenServer.start_link(PaymentServer.ExchangeRate, state, opts)
@@ -25,6 +28,15 @@ defmodule PaymentServer.ExchangeRate do
 
   def get_exchange_rates(server \\ @server_name) do
     GenServer.call(server, {:get_exchange_rates})
+  end
+
+  def broadcast_total_worth(
+        %{user_id: user_id, currency: currency} = event,
+        server \\ @server_name
+      ) do
+    wallets = Accounts.list_wallets(%{user_id: user_id})
+    params = Map.put(event, :wallets, wallets)
+    GenServer.cast(@server_name, {:broadcast_total_worth, params})
   end
 
   def refresh() do
@@ -65,6 +77,21 @@ defmodule PaymentServer.ExchangeRate do
 
     # Returns nil for refresh, unnecessary
     {:reply, nil, %{exchange_rate: new_exchange_rate, timer: new_timer}}
+  end
+
+  def handle_cast({:broadcast_total_worth, event}, state) do
+    fx_rates = state[:exchange_rate]
+
+    Absinthe.Subscription.publish(
+      PaymentServerWeb.Endpoint,
+      %{
+        currency: event.currency,
+        amount: Money.to_string(Worth.calculate_total(event.currency, event.wallets, fx_rates))
+      },
+      total_worth: "total_worth:#{event.user_id}"
+    )
+
+    {:noreply, state}
   end
 
   # Private/utility methods
