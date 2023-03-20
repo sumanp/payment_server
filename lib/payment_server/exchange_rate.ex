@@ -83,7 +83,12 @@ defmodule PaymentServer.ExchangeRate do
         {:broadcast_total_worth, event},
         %{exchange_rate: exchange_rate, timer: timer} = state
       ) do
-    amount = Money.to_string(Worth.calculate_total(event.currency, event.wallets, exchange_rate))
+    Process.cancel_timer(timer)
+
+    new_exchange_rate = do_refresh(exchange_rate)
+
+    amount =
+      Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
 
     Absinthe.Subscription.publish(
       PaymentServerWeb.Endpoint,
@@ -94,19 +99,9 @@ defmodule PaymentServer.ExchangeRate do
       total_worth: "total_worth:#{event.user_id}"
     )
 
-    new_exchange_rate = do_refresh(exchange_rate)
+    new_timer = Process.send_after(self(), {:broadcast_total_worth, event}, @refresh_interval_ms)
 
-    new_amount =
-      Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
-
-    if new_amount == amount do
-      {:noreply, state}
-    else
-      new_timer =
-        Process.send_after(self(), {:broadcast_total_worth, event}, @refresh_interval_ms)
-
-      {:noreply, %{exchange_rate: new_exchange_rate, timer: new_timer}}
-    end
+    {:noreply, %{exchange_rate: new_exchange_rate, timer: new_timer}}
   end
 
   def handle_info({:broadcast_total_worth, event}, %{exchange_rate: exchange_rate} = _state) do
