@@ -5,7 +5,7 @@ defmodule PaymentServer.ExchangeRate do
   alias PaymentServer.Worth
   alias PaymentServer.Accounts
 
-  @refresh_interval_ms 20_000
+  @refresh_interval_ms 5_000
   @server_name PaymentServer
 
   # Client
@@ -79,19 +79,54 @@ defmodule PaymentServer.ExchangeRate do
     {:reply, nil, %{exchange_rate: new_exchange_rate, timer: new_timer}}
   end
 
-  def handle_cast({:broadcast_total_worth, event}, state) do
-    fx_rates = state[:exchange_rate]
+  def handle_cast(
+        {:broadcast_total_worth, event},
+        %{exchange_rate: exchange_rate, timer: timer} = state
+      ) do
+    amount = Money.to_string(Worth.calculate_total(event.currency, event.wallets, exchange_rate))
 
     Absinthe.Subscription.publish(
       PaymentServerWeb.Endpoint,
       %{
         currency: event.currency,
-        amount: Money.to_string(Worth.calculate_total(event.currency, event.wallets, fx_rates))
+        amount: amount
       },
       total_worth: "total_worth:#{event.user_id}"
     )
 
-    {:noreply, state}
+    new_exchange_rate = do_refresh(exchange_rate)
+
+    new_amount =
+      Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
+
+    if new_amount == amount do
+      {:noreply, state}
+    else
+      new_timer =
+        Process.send_after(self(), {:broadcast_total_worth, event}, @refresh_interval_ms)
+
+      {:noreply, %{exchange_rate: new_exchange_rate, timer: new_timer}}
+    end
+  end
+
+  def handle_info({:broadcast_total_worth, event}, %{exchange_rate: exchange_rate} = _state) do
+    new_exchange_rate = do_refresh(exchange_rate)
+
+    amount =
+      Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
+
+    Absinthe.Subscription.publish(
+      PaymentServerWeb.Endpoint,
+      %{
+        currency: event.currency,
+        amount: amount
+      },
+      total_worth: "total_worth:#{event.user_id}"
+    )
+
+    timer = Process.send_after(self(), {:broadcast_total_worth, event}, @refresh_interval_ms)
+
+    {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
   end
 
   # Private/utility methods
