@@ -171,6 +171,16 @@ defmodule PaymentServer.ExchangeRate do
           exchange_rates: "exchange_rates:*"
         )
 
+        Absinthe.Subscription.publish(
+          PaymentServerWeb.Endpoint,
+          %{
+            from: from,
+            to: to,
+            amount: value
+          },
+          exchange_rates_by_currency: "exchange_rates:#{to}"
+        )
+
         {String.to_atom(key), value}
       end)
 
