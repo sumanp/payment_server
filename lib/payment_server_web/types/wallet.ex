@@ -16,4 +16,10 @@ defmodule PaymentServerWeb.Types.Wallet do
     field :currency, :string
     field :amount, :string
   end
+
+  object :exchange_rates do
+    field :from, :string
+    field :to, :string
+    field :amount, :string
+  end
 end

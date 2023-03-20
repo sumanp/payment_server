@@ -156,16 +156,26 @@ defmodule PaymentServer.ExchangeRate do
       |> Task.async_stream(&HTTPoison.get/1)
       |> Enum.map(fn {:ok, {:ok, result}} ->
         res = Jason.decode!(result.body)
-
-        key =
-          res["Realtime Currency Exchange Rate"]["1. From_Currency Code"] <>
-            "_" <> res["Realtime Currency Exchange Rate"]["3. To_Currency Code"]
-
+        from = res["Realtime Currency Exchange Rate"]["1. From_Currency Code"]
+        to = res["Realtime Currency Exchange Rate"]["3. To_Currency Code"]
+        key = from <> "_" <> to
         value = res["Realtime Currency Exchange Rate"]["5. Exchange Rate"]
+
+        Absinthe.Subscription.publish(
+          PaymentServerWeb.Endpoint,
+          %{
+            from: from,
+            to: to,
+            amount: value
+          },
+          exchange_rates: "exchange_rates:*"
+        )
+
         {String.to_atom(key), value}
       end)
 
     Logger.info(result)
+
     result
   end
 
