@@ -27,7 +27,7 @@ defmodule PaymentServerWeb.Schemas.Mutations.UserTest do
                  email: "name2@email.com"
                })
 
-      assert {:ok, wallet_1} =
+      assert {:ok, _wallet_1} =
                Accounts.create_wallet(%{
                  currency: "USD",
                  address: "name1@email.com",
@@ -35,7 +35,7 @@ defmodule PaymentServerWeb.Schemas.Mutations.UserTest do
                  user_id: user_1.id
                })
 
-      assert {:ok, wallet_2} =
+      assert {:ok, _wallet_2} =
                Accounts.create_wallet(%{
                  currency: "USD",
                  address: "name2@email.com",

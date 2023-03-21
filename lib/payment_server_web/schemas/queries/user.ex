@@ -8,7 +8,7 @@ defmodule PaymentServerWeb.Schemas.Queries.User do
       arg :after, :integer
       arg :first, :integer
 
-      resolve(&Resolvers.User.all/2)
+      resolve &Resolvers.User.all/2
     end
   end
 end

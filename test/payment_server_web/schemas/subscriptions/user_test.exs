@@ -1,9 +1,7 @@
 defmodule PaymentServerWeb.Schemas.Subscriptions.UserTest do
   use PaymentServer.SubscriptionCase
-  import Ecto.Query
 
   alias PaymentServer.Accounts
-  alias PaymentServer.Repo
   alias PaymentServer.ExchangeRate
   alias PaymentServer.Worth
 
@@ -24,7 +22,7 @@ defmodule PaymentServerWeb.Schemas.Subscriptions.UserTest do
                  email: "name1@email.com"
                })
 
-      assert {:ok, wallet_1} =
+      assert {:ok, _wallet_1} =
                Accounts.create_wallet(%{
                  currency: "EUR",
                  address: "name1@email.com",
@@ -32,7 +30,7 @@ defmodule PaymentServerWeb.Schemas.Subscriptions.UserTest do
                  user_id: user.id
                })
 
-      assert {:ok, wallet_2} =
+      assert {:ok, _wallet_2} =
                Accounts.create_wallet(%{
                  currency: "INR",
                  address: "name2@email.com",

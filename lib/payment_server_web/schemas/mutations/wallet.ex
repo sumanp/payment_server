@@ -9,7 +9,7 @@ defmodule PaymentServerWeb.Schemas.Mutations.Wallet do
       arg :address, :string
       arg :user_id, :integer
 
-      resolve(&Resolvers.Wallet.create/2)
+      resolve &Resolvers.Wallet.create/2
     end
   end
 end

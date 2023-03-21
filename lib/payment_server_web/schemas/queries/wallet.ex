@@ -7,7 +7,7 @@ defmodule PaymentServerWeb.Schemas.Queries.Wallet do
       arg :user_id, non_null(:id)
       arg :currency, :string
 
-      resolve(&Resolvers.Wallet.find_by_currency/2)
+      resolve &Resolvers.Wallet.find_by_currency/2
     end
 
     field :wallets, list_of(:wallet) do
@@ -16,14 +16,14 @@ defmodule PaymentServerWeb.Schemas.Queries.Wallet do
       arg :first, :integer
       arg :user_id, :integer
 
-      resolve(&Resolvers.Wallet.all/2)
+      resolve &Resolvers.Wallet.all/2
     end
 
     field :total_worth, :total_worth do
       arg :currency, :string
       arg :user_id, :integer
 
-      resolve(&Resolvers.Wallet.total_worth/2)
+      resolve &Resolvers.Wallet.total_worth/2
     end
   end
 end

@@ -4,7 +4,7 @@ defmodule PaymentServer.Worth do
 
   def calculate_total(currency, wallets, exchange_rates) do
     Enum.reduce(wallets, Money.new(0), fn wallet, acc ->
-      if wallet.currency == currency do
+      if wallet.currency === currency do
         Money.add(acc, wallet.amount)
       else
         key = String.to_atom(wallet.currency <> "_" <> currency)

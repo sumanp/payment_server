@@ -43,7 +43,7 @@ defmodule PaymentServerWeb.Schemas.Mutations.WalletTest do
       assert created_wallet_res["amount"] === create_amount
       assert created_wallet_res["address"] === create_address
 
-      money_type = Money.new(10000)
+      money_type = Money.new(10_000)
 
       assert %{
                currency: ^create_currency,

@@ -164,7 +164,7 @@ defmodule PaymentServerWeb.Schemas.Queries.WalletTest do
                  email: "name1@email.com"
                })
 
-      assert {:ok, wallet_1} =
+      assert {:ok, _wallet_1} =
                Accounts.create_wallet(%{
                  currency: "USD",
                  address: "name1@email.com",
@@ -172,7 +172,7 @@ defmodule PaymentServerWeb.Schemas.Queries.WalletTest do
                  user_id: user.id
                })
 
-      assert {:ok, wallet_2} =
+      assert {:ok, _wallet_2} =
                Accounts.create_wallet(%{
                  currency: "GBP",
                  address: "name2@email.com",
@@ -180,7 +180,7 @@ defmodule PaymentServerWeb.Schemas.Queries.WalletTest do
                  user_id: user.id
                })
 
-      assert {:ok, wallet_2} =
+      assert {:ok, wallet_3} =
                Accounts.create_wallet(%{
                  currency: "EUR",
                  address: "name3@email.com",
@@ -196,8 +196,8 @@ defmodule PaymentServerWeb.Schemas.Queries.WalletTest do
                  }
                )
 
-      assert data["walletByCurrency"]["id"] === to_string(wallet_2.id)
-      assert data["walletByCurrency"]["currency"] === to_string(wallet_2.currency)
+      assert data["walletByCurrency"]["id"] === to_string(wallet_3.id)
+      assert data["walletByCurrency"]["currency"] === to_string(wallet_3.currency)
     end
   end
 end

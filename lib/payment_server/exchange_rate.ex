@@ -5,7 +5,7 @@ defmodule PaymentServer.ExchangeRate do
   alias PaymentServer.Worth
   alias PaymentServer.Accounts
 
-  @refresh_interval_ms 5_000
+  @refresh_interval_ms 1_000
   @server_name PaymentServer
 
   # Client
@@ -30,16 +30,14 @@ defmodule PaymentServer.ExchangeRate do
     GenServer.call(server, {:get_exchange_rates})
   end
 
-  def broadcast_total_worth(
-        %{user_id: user_id, currency: currency} = event,
-        server \\ @server_name
-      ) do
+  def broadcast_total_worth(%{user_id: user_id} = event, server \\ @server_name) do
     wallets = Accounts.list_wallets(%{user_id: user_id})
     params = Map.put(event, :wallets, wallets)
-    GenServer.cast(@server_name, {:broadcast_total_worth, params})
+    GenServer.cast(server, {:broadcast_total_worth, params})
   end
 
   # Server Callbacks
+  @impl true
   def init(state) do
     Process.flag(:trap_exit, true)
     timer = Process.send_after(self(), :tick, @refresh_interval_ms)
@@ -47,25 +45,20 @@ defmodule PaymentServer.ExchangeRate do
     {:ok, %{exchange_rate: state, timer: timer}}
   end
 
+  @impl true
   def handle_call({:get_exchange_rate, currency_pair}, _from_pid, state) do
     {:reply, state[:exchange_rate][currency_pair], state}
   end
 
+  @impl true
   def handle_call({:get_exchange_rates}, _from_pid, state) do
     {:reply, state[:exchange_rate], state}
   end
 
   @impl true
-  def handle_info(:tick, %{exchange_rate: exchange_rate} = _state) do
-    new_exchange_rate = do_refresh(exchange_rate)
-    timer = Process.send_after(self(), :tick, @refresh_interval_ms)
-
-    {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
-  end
-
   def handle_cast(
         {:broadcast_total_worth, event},
-        %{exchange_rate: exchange_rate, timer: timer} = state
+        %{exchange_rate: exchange_rate, timer: timer} = _state
       ) do
     Process.cancel_timer(timer)
     new_exchange_rate = do_refresh(exchange_rate)
@@ -87,6 +80,15 @@ defmodule PaymentServer.ExchangeRate do
     {:noreply, %{exchange_rate: new_exchange_rate, timer: new_timer}}
   end
 
+  @impl true
+  def handle_info(:tick, %{exchange_rate: exchange_rate} = _state) do
+    new_exchange_rate = do_refresh(exchange_rate)
+    timer = Process.send_after(self(), :tick, @refresh_interval_ms)
+
+    {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
+  end
+
+  @impl true
   def handle_info({:broadcast_total_worth, event}, %{exchange_rate: exchange_rate} = _state) do
     new_exchange_rate = do_refresh(exchange_rate)
 
@@ -110,10 +112,8 @@ defmodule PaymentServer.ExchangeRate do
   # Private/utility methods
 
   defp all_currency_pair(currency_list) do
-    currency_list
-    |> Enum.flat_map(fn x ->
-      currency_list
-      |> Enum.map(fn y ->
+    Enum.flat_map(currency_list, fn x ->
+      Enum.map(currency_list, fn y ->
         [x, y]
       end)
     end)
@@ -121,7 +121,7 @@ defmodule PaymentServer.ExchangeRate do
 
   defp reject_twin_pair(pair_list) do
     Enum.reject(pair_list, fn x ->
-      List.first(x) == List.last(x)
+      List.first(x) === List.last(x)
     end)
   end
 
@@ -171,7 +171,7 @@ defmodule PaymentServer.ExchangeRate do
   end
 
   defp map_request_urls(exchange_rate) do
-    Enum.map(exchange_rate, fn {k, v} ->
+    Enum.map(exchange_rate, fn {k, _v} ->
       code = String.split(Atom.to_string(k), "_")
 
       "http://localhost:4001/query?function=CURRENCY_EXCHANGE_RATE&from_currency=#{List.first(code)}&to_currency=#{List.last(code)}&apikey=demo"

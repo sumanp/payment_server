@@ -29,7 +29,7 @@ defmodule PaymentServerWeb.Resolvers.User do
       # stored as cents, integer data type
       amount = Money.new(amount * 100)
 
-      if(amount <= from_wallet.amount) do
+      if amount <= from_wallet.amount do
         add_amount = Money.add(to_wallet.amount, amount)
         subtract_amount = Money.subtract(from_wallet.amount, amount)
 
