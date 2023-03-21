@@ -39,12 +39,6 @@ defmodule PaymentServer.ExchangeRate do
     GenServer.cast(@server_name, {:broadcast_total_worth, params})
   end
 
-  def refresh() do
-    GenServer.call(@server_name, :refresh, :infinity)
-
-    :ok
-  end
-
   # Server Callbacks
   def init(state) do
     Process.flag(:trap_exit, true)
@@ -69,22 +63,11 @@ defmodule PaymentServer.ExchangeRate do
     {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
   end
 
-  @impl true
-  def handle_call(:refresh, _from, %{exchange_rate: exchange_rate, timer: timer} = _state) do
-    Process.cancel_timer(timer)
-    new_exchange_rate = do_refresh(exchange_rate)
-    new_timer = Process.send_after(self(), :tick, @refresh_interval_ms)
-
-    # Returns nil for refresh, unnecessary
-    {:reply, nil, %{exchange_rate: new_exchange_rate, timer: new_timer}}
-  end
-
   def handle_cast(
         {:broadcast_total_worth, event},
         %{exchange_rate: exchange_rate, timer: timer} = state
       ) do
     Process.cancel_timer(timer)
-
     new_exchange_rate = do_refresh(exchange_rate)
 
     amount =
@@ -158,7 +141,7 @@ defmodule PaymentServer.ExchangeRate do
         res = Jason.decode!(result.body)
         from = res["Realtime Currency Exchange Rate"]["1. From_Currency Code"]
         to = res["Realtime Currency Exchange Rate"]["3. To_Currency Code"]
-        key = from <> "_" <> to
+        key = String.to_atom(from <> "_" <> to)
         value = res["Realtime Currency Exchange Rate"]["5. Exchange Rate"]
 
         Absinthe.Subscription.publish(
@@ -181,10 +164,8 @@ defmodule PaymentServer.ExchangeRate do
           exchange_rates_by_currency: "exchange_rates:#{to}"
         )
 
-        {String.to_atom(key), value}
+        {key, value}
       end)
-
-    Logger.info(result)
 
     result
   end
