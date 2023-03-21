@@ -1,6 +1,7 @@
 defmodule PaymentServerWeb.Resolvers.Wallet do
   alias PaymentServer.Accounts
   alias PaymentServer.Worth
+  alias PaymentServer.ExchangeRate
 
   def all(params, _) do
     {:ok, PaymentServer.Accounts.list_wallets(params)}
@@ -18,7 +19,7 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
     Accounts.create_wallet(params)
   end
 
-  def total_worth(%{currency: currency, user_id: user_id} = params, _) do
+  def total_worth(%{currency: currency, user_id: user_id} = _params, _) do
     wallets = Accounts.list_wallets(%{user_id: user_id})
     fx_rates = ExchangeRate.get_exchange_rates()
     {:ok, %{currency: currency, amount: Worth.calculate_total(currency, wallets, fx_rates)}}
