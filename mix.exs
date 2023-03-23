@@ -50,7 +50,9 @@ defmodule PaymentServer.MixProject do
       {:dataloader, "~> 1.0"},
       {:httpoison, "~> 2.0"},
       {:money, "~> 1.12"},
-      {:ecto_shorts, "~> 2.2"}
+      {:ecto_shorts, "~> 2.2"},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
     ]
   end
 
