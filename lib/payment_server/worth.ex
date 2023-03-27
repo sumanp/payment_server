@@ -1,6 +1,4 @@
 defmodule PaymentServer.Worth do
-  alias PaymentServer.Accounts.Wallet
-  alias PaymentServer.ExchangeRate
 
   def calculate_total(currency, wallets, exchange_rates) do
     Enum.reduce(wallets, Money.new(0), fn wallet, acc ->
