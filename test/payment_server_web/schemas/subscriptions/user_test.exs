@@ -2,7 +2,7 @@ defmodule PaymentServerWeb.Schemas.Subscriptions.UserTest do
   use PaymentServer.SubscriptionCase
 
   alias PaymentServer.Accounts
-  alias PaymentServer.ExchangeRate
+  alias PaymentServer.ExchangeRateStore
   alias PaymentServer.Worth
 
   @total_woth_sub_doc """
@@ -53,7 +53,7 @@ defmodule PaymentServerWeb.Schemas.Subscriptions.UserTest do
 
       assert_reply ref, :ok, %{subscriptionId: subscription_id}
       wallets = Accounts.list_wallets(%{user_id: user.id})
-      fx_rates = ExchangeRate.get_exchange_rates()
+      fx_rates = ExchangeRateStore.get_exchange_rates()
       amount = Money.to_string(Worth.calculate_total("GBP", wallets, fx_rates))
 
       assert :ok =
