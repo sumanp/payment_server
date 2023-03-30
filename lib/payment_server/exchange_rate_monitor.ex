@@ -1,12 +1,13 @@
-defmodule PaymentServer.ExchangeRate do
+defmodule PaymentServer.ExchangeRateMonitor do
   use GenServer
 
   require Logger
   alias PaymentServer.Worth
   alias PaymentServer.Accounts
+  alias PaymentServer.ExchangeRateStore
 
   @refresh_interval_ms 1_000
-  @server_name PaymentServer
+  @server_name ExchangeRateMonitor
 
   # Client
   def start_link(supported_currencies, opts \\ []) do
@@ -19,15 +20,7 @@ defmodule PaymentServer.ExchangeRate do
     state = Enum.into(currency_pair, %{}, &{&1, "0.00"})
     opts = Keyword.put_new(opts, :name, @server_name)
 
-    GenServer.start_link(PaymentServer.ExchangeRate, state, opts)
-  end
-
-  def get_exchange_rate(currency_pair, server \\ @server_name) do
-    GenServer.call(server, {:get_exchange_rate, currency_pair})
-  end
-
-  def get_exchange_rates(server \\ @server_name) do
-    GenServer.call(server, {:get_exchange_rates})
+    GenServer.start_link(PaymentServer.ExchangeRateMonitor, state, opts)
   end
 
   def broadcast_total_worth(%{user_id: user_id} = event, server \\ @server_name) do
@@ -43,16 +36,6 @@ defmodule PaymentServer.ExchangeRate do
     timer = Process.send_after(self(), :tick, @refresh_interval_ms)
 
     {:ok, %{exchange_rate: state, timer: timer}}
-  end
-
-  @impl true
-  def handle_call({:get_exchange_rate, currency_pair}, _from_pid, state) do
-    {:reply, state[:exchange_rate][currency_pair], state}
-  end
-
-  @impl true
-  def handle_call({:get_exchange_rates}, _from_pid, state) do
-    {:reply, state[:exchange_rate], state}
   end
 
   @impl true
@@ -83,6 +66,8 @@ defmodule PaymentServer.ExchangeRate do
   @impl true
   def handle_info(:tick, %{exchange_rate: exchange_rate} = _state) do
     new_exchange_rate = do_refresh(exchange_rate)
+    ExchangeRateStore.update_rates(new_exchange_rate)
+
     timer = Process.send_after(self(), :tick, @refresh_interval_ms)
 
     {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
@@ -133,7 +118,7 @@ defmodule PaymentServer.ExchangeRate do
 
   defp do_refresh(exchange_rate) do
     urls = map_request_urls(exchange_rate)
-
+    :timer.sleep(1000)
     result =
       urls
       |> Task.async_stream(&HTTPoison.get/1)
