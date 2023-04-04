@@ -3,8 +3,6 @@ defmodule PaymentServer.Accounts do
   alias EctoShorts.Actions
   alias PaymentServer.Repo
 
-  import Ecto.Query
-
   def list_users(params \\ %{}) do
     Actions.all(User, params)
   end
