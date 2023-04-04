@@ -5,6 +5,7 @@ defmodule PaymentServer.ExchangeRateMonitor do
   alias PaymentServer.Worth
   alias PaymentServer.Accounts
   alias PaymentServer.ExchangeRateStore
+  alias PaymentServer.FxHelper
 
   @refresh_interval_ms 1_000
   @server_name ExchangeRateMonitor
@@ -13,9 +14,9 @@ defmodule PaymentServer.ExchangeRateMonitor do
   def start_link(supported_currencies, opts \\ []) do
     currency_pair =
       supported_currencies
-      |> all_currency_pair()
-      |> reject_twin_pair()
-      |> pair_keys()
+      |> FxHelper.all_currency_pair()
+      |> FxHelper.reject_twin_pair()
+      |> FxHelper.pair_keys()
 
     state = Enum.into(currency_pair, %{}, &{&1, "0.00"})
     opts = Keyword.put_new(opts, :name, @server_name)
@@ -94,31 +95,9 @@ defmodule PaymentServer.ExchangeRateMonitor do
     {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
   end
 
-  # Private/utility methods
-
-  defp all_currency_pair(currency_list) do
-    Enum.flat_map(currency_list, fn x ->
-      Enum.map(currency_list, fn y ->
-        [x, y]
-      end)
-    end)
-  end
-
-  defp reject_twin_pair(pair_list) do
-    Enum.reject(pair_list, fn x ->
-      List.first(x) === List.last(x)
-    end)
-  end
-
-  defp pair_keys(pair_list) do
-    Enum.map(pair_list, fn x ->
-      String.to_atom("#{List.first(x)}_#{List.last(x)}")
-    end)
-  end
-
   defp do_refresh(exchange_rate) do
     urls = map_request_urls(exchange_rate)
-    :timer.sleep(1000)
+
     result =
       urls
       |> Task.async_stream(&HTTPoison.get/1)
