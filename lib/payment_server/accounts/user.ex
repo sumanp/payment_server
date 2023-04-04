@@ -2,9 +2,6 @@ defmodule PaymentServer.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias EctoShorts.CommonChanges
-  alias PaymentServer.Repo
-
   schema "users" do
     field :email, :string
     field :name, :string
