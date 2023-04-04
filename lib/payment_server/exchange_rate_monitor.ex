@@ -45,7 +45,7 @@ defmodule PaymentServer.ExchangeRateMonitor do
         %{exchange_rate: exchange_rate, timer: timer} = _state
       ) do
     Process.cancel_timer(timer)
-    new_exchange_rate = do_refresh(exchange_rate)
+    new_exchange_rate = poll_exchange_rate(exchange_rate)
 
     amount =
       Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
@@ -66,7 +66,7 @@ defmodule PaymentServer.ExchangeRateMonitor do
 
   @impl true
   def handle_info(:tick, %{exchange_rate: exchange_rate} = _state) do
-    new_exchange_rate = do_refresh(exchange_rate)
+    new_exchange_rate = poll_exchange_rate(exchange_rate)
     ExchangeRateStore.update_rates(new_exchange_rate)
 
     timer = Process.send_after(self(), :tick, @refresh_interval_ms)
@@ -76,7 +76,7 @@ defmodule PaymentServer.ExchangeRateMonitor do
 
   @impl true
   def handle_info({:broadcast_total_worth, event}, %{exchange_rate: exchange_rate} = _state) do
-    new_exchange_rate = do_refresh(exchange_rate)
+    new_exchange_rate = poll_exchange_rate(exchange_rate)
 
     amount =
       Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
@@ -95,7 +95,7 @@ defmodule PaymentServer.ExchangeRateMonitor do
     {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
   end
 
-  defp do_refresh(exchange_rate) do
+  defp poll_exchange_rate(exchange_rate) do
     urls = map_request_urls(exchange_rate)
 
     result =
