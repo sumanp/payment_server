@@ -45,11 +45,14 @@ defmodule PaymentServerWeb.Schemas.Mutations.WalletTest do
 
       money_type = Money.new(10_000)
 
+      {:ok, wallet} =
+        Accounts.find_wallet_by_currency(%{user_id: user.id, currency: create_currency})
+
       assert %{
                currency: ^create_currency,
                amount: ^money_type,
                address: ^create_address
-             } = Accounts.find_wallet_by_currency(%{user_id: user.id, currency: create_currency})
+             } = wallet
     end
   end
 end

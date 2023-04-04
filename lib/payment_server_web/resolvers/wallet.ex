@@ -12,7 +12,7 @@ defmodule PaymentServerWeb.Resolvers.Wallet do
   end
 
   def find_by_currency(params, _) do
-    {:ok, Accounts.find_wallet_by_currency(params)}
+    Accounts.find_wallet_by_currency(params)
   end
 
   def create(params, _) do

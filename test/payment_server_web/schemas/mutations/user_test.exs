@@ -58,9 +58,11 @@ defmodule PaymentServerWeb.Schemas.Mutations.UserTest do
 
       updated_amount = Money.new(2000)
 
+      {:ok, wallet} = Accounts.find_wallet_by_currency(%{user_id: user_2.id, currency: "USD"})
+
       assert %{
                amount: ^updated_amount
-             } = Accounts.find_wallet_by_currency(%{user_id: user_2.id, currency: "USD"})
+             } = wallet
     end
   end
 
