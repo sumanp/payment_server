@@ -1,7 +1,6 @@
 defmodule PaymentServer.Accounts do
   alias PaymentServer.Accounts.{User, Wallet}
   alias EctoShorts.Actions
-  alias PaymentServer.Repo
 
   def list_users(params \\ %{}) do
     Actions.all(User, params)
@@ -24,7 +23,7 @@ defmodule PaymentServer.Accounts do
   end
 
   def find_wallet_by_currency(params) do
-    Repo.one(Wallet.filter_by_currency(params))
+    Actions.find(Wallet, params)
   end
 
   def update_wallet(id, params) do
