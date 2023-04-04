@@ -23,3 +23,5 @@ erl_crash.dump
 payment_server-*.tar
 
 scratchpad.txt
+.elixir_ls
+.DS_Store
