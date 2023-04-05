@@ -1,4 +1,4 @@
-defmodule PaymentServer.FxHelper do
+defmodule PaymentServer.ExchangeHelper do
   def all_currency_pair(currency_list) do
     Enum.flat_map(currency_list, fn x ->
       Enum.map(currency_list, fn y ->

@@ -4,7 +4,7 @@ defmodule PaymentServer.ExchangeRateMonitor do
   alias PaymentServer.Worth
   alias PaymentServer.Accounts
   alias PaymentServer.ExchangeRateStore
-  alias PaymentServer.FxHelper
+  alias PaymentServer.ExchangeHelper
 
   @refresh_interval_ms 1_000
   @server_name ExchangeRateMonitor
@@ -13,9 +13,9 @@ defmodule PaymentServer.ExchangeRateMonitor do
   def start_link(supported_currencies, opts \\ []) do
     currency_pair =
       supported_currencies
-      |> FxHelper.all_currency_pair()
-      |> FxHelper.reject_twin_pair()
-      |> FxHelper.pair_keys()
+      |> ExchangeHelper.all_currency_pair()
+      |> ExchangeHelper.reject_twin_pair()
+      |> ExchangeHelper.pair_keys()
 
     state = Enum.into(currency_pair, %{}, &{&1, "0.00"})
     opts = Keyword.put_new(opts, :name, @server_name)
