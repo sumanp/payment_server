@@ -94,6 +94,8 @@ defmodule PaymentServer.ExchangeRateMonitor do
     {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
   end
 
+  # Private / Utility functions
+
   defp poll_exchange_rate(exchange_rate) do
     urls = map_request_urls(exchange_rate)
 
