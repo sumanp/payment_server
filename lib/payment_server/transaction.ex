@@ -33,7 +33,8 @@ defmodule PaymentServer.Transaction do
 
   def transfer_money(from, to, amount) do
     # Use Ecto.Multi
-    Wallet.transfer_money(from, to, amount)
+    from
+    |> Wallet.transfer_money(to, amount)
     |> Repo.transaction()
     |> case do
       {:ok, _} ->
