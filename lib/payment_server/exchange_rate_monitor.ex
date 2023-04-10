@@ -5,6 +5,7 @@ defmodule PaymentServer.ExchangeRateMonitor do
   alias PaymentServer.Accounts
   alias PaymentServer.ExchangeRateStore
   alias PaymentServer.ExchangeHelper
+  require Logger
 
   @refresh_interval_ms 1_000
   @server_name ExchangeRateMonitor
@@ -67,7 +68,6 @@ defmodule PaymentServer.ExchangeRateMonitor do
   def handle_info(:tick, %{exchange_rate: exchange_rate} = _state) do
     new_exchange_rate = poll_exchange_rate(exchange_rate)
     ExchangeRateStore.update_rates(new_exchange_rate)
-
     timer = Process.send_after(self(), :tick, @refresh_interval_ms)
 
     {:noreply, %{exchange_rate: new_exchange_rate, timer: timer}}
@@ -101,17 +101,22 @@ defmodule PaymentServer.ExchangeRateMonitor do
 
     urls
     |> Task.async_stream(&HTTPoison.get/1)
-    |> Enum.map(fn {:ok, {:ok, result}} ->
-      res = Jason.decode!(result.body)
-      from = res["Realtime Currency Exchange Rate"]["1. From_Currency Code"]
-      to = res["Realtime Currency Exchange Rate"]["3. To_Currency Code"]
-      key = String.to_atom(from <> "_" <> to)
-      value = res["Realtime Currency Exchange Rate"]["5. Exchange Rate"]
+    |> Enum.map(fn
+      {:ok, {:ok, result}} ->
+        res = Jason.decode!(result.body)
+        from = res["Realtime Currency Exchange Rate"]["1. From_Currency Code"]
+        to = res["Realtime Currency Exchange Rate"]["3. To_Currency Code"]
+        key = String.to_atom(from <> "_" <> to)
+        value = res["Realtime Currency Exchange Rate"]["5. Exchange Rate"]
 
-      publish_all_exchange_rates(from, to, value)
-      publish_each_exchange_rates(from, to, value)
+        publish_all_exchange_rates(from, to, value)
+        publish_each_exchange_rates(from, to, value)
 
-      {key, value}
+        {key, value}
+
+      {:ok, {:error, %HTTPoison.Error{reason: reason}}} ->
+        Logger.warning(reason)
+        {:error, 0}
     end)
   end
 
