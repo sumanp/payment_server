@@ -13,8 +13,7 @@ defmodule PaymentServer.Transaction do
            Accounts.find_wallet_by_currency(%{user_id: to_user_id, currency: currency}),
          {:ok, from_wallet} <-
            Accounts.find_wallet_by_currency(%{user_id: from_user_id, currency: currency}) do
-      tuple = Float.parse(amount)
-      {amount, _} = tuple
+      {amount, _} = Float.parse(amount)
 
       # stored as cents, integer data type
       amount = trunc(amount * 100)
