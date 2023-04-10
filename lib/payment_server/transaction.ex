@@ -22,10 +22,10 @@ defmodule PaymentServer.Transaction do
       if amount <= from_wallet.amount do
         transfer_money(from_wallet, to_wallet, amount)
       else
-        {:ok, %{status: "ERROR", message: "Insufficient funds"}}
+        {:error, %{message: "Insufficient funds"}}
       end
     else
-      _err -> {:ok, %{status: "ERROR", message: "Account not found"}}
+      _err -> {:error, %{message: "Account not found"}}
     end
   end
 
@@ -39,7 +39,7 @@ defmodule PaymentServer.Transaction do
         {:ok, %{status: "SUCCESS", message: "Payment sent successfully"}}
 
       {:error, _name, _value, _changes_so_far} ->
-        {:ok, %{status: "ERROR", message: "Payment Unsuccessful"}}
+        {:error, %{message: "Payment Unsuccessful"}}
     end
   end
 end
