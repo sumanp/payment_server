@@ -1,11 +1,11 @@
-defmodule PaymentServer.ExchangeRateMonitorTest do
+defmodule ExchangeRateTest do
   use PaymentServer.DataCase, async: true
 
   alias PaymentServer.Accounts
 
   setup do
     supported_currencies = Application.fetch_env!(:payment_server, :supported_currencies)
-    {:ok, pid} = PaymentServer.ExchangeRateMonitor.start_link(supported_currencies, name: nil)
+    {:ok, pid} = ExchangeRate.start_link(supported_currencies, name: nil)
     %{pid: pid}
   end
 
@@ -28,7 +28,7 @@ defmodule PaymentServer.ExchangeRateMonitorTest do
       assert true === Process.alive?(pid)
 
       assert :ok ===
-               PaymentServer.ExchangeRateMonitor.broadcast_total_worth(
+               ExchangeRate.broadcast_total_worth(
                  %{user_id: user.id, currency: "USD"},
                  pid
                )

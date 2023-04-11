@@ -1,6 +1,5 @@
 defmodule PaymentServerWeb.Schemas.Subscriptions.User do
   use Absinthe.Schema.Notation
-  alias PaymentServer.ExchangeRateMonitor
 
   object :user_subscriptions do
     field :total_worth, :total_worth do
@@ -8,7 +7,7 @@ defmodule PaymentServerWeb.Schemas.Subscriptions.User do
       arg :currency, non_null(:string)
 
       config fn args, _info ->
-        ExchangeRateMonitor.broadcast_total_worth(args)
+        ExchangeRate.broadcast_total_worth(args)
 
         {:ok, topic: "total_worth:#{args.user_id}"}
       end
