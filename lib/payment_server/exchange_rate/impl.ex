@@ -1,64 +1,7 @@
 defmodule PaymentServer.ExchangeRate.Impl do
-  alias PaymentServer.Worth
-  alias PaymentServer.ExchangeRateStore
   require Logger
 
-  @refresh_interval_ms 1_000
-  @server_name ExchangeRateMonitor
-
-  def broadcast_total_worth(event, exchange_rate, timer) do
-    Process.cancel_timer(timer)
-    new_exchange_rate = poll_exchange_rate(exchange_rate)
-
-    amount =
-      Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
-
-    Absinthe.Subscription.publish(
-      PaymentServerWeb.Endpoint,
-      %{
-        currency: event.currency,
-        amount: amount
-      },
-      total_worth: "total_worth:#{event.user_id}"
-    )
-
-    new_timer =
-      Process.send_after(@server_name, {:broadcast_total_worth, event}, @refresh_interval_ms)
-
-    %{exchange_rate: new_exchange_rate, timer: new_timer}
-  end
-
-  def tick(exchange_rate) do
-    new_exchange_rate = poll_exchange_rate(exchange_rate)
-    ExchangeRateStore.update_rates(new_exchange_rate)
-    timer = Process.send_after(self(), :tick, @refresh_interval_ms)
-
-    %{exchange_rate: new_exchange_rate, timer: timer}
-  end
-
-  def broadcast_total_worth_info(event, exchange_rate) do
-    new_exchange_rate = poll_exchange_rate(exchange_rate)
-
-    amount =
-      Money.to_string(Worth.calculate_total(event.currency, event.wallets, new_exchange_rate))
-
-    Absinthe.Subscription.publish(
-      PaymentServerWeb.Endpoint,
-      %{
-        currency: event.currency,
-        amount: amount
-      },
-      total_worth: "total_worth:#{event.user_id}"
-    )
-
-    timer = Process.send_after(self(), {:broadcast_total_worth, event}, @refresh_interval_ms)
-
-    %{exchange_rate: new_exchange_rate, timer: timer}
-  end
-
-  # Private / Utility functions
-
-  defp poll_exchange_rate(exchange_rate) do
+  def poll_exchange_rate(exchange_rate) do
     urls = map_request_urls(exchange_rate)
 
     urls
@@ -81,6 +24,8 @@ defmodule PaymentServer.ExchangeRate.Impl do
         {:error, 0}
     end)
   end
+
+  # Private / Utility functions
 
   defp map_request_urls(exchange_rate) do
     Enum.map(exchange_rate, fn {k, _v} ->

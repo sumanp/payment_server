@@ -4,35 +4,26 @@ defmodule PaymentServer.ExchangeRate.ImplTest do
   alias PaymentServer.ExchangeRate.Impl
   alias PaymentServer.Accounts
 
-  describe "&tick/1" do
+  describe "&poll_exchange_rate/1" do
     test "updates exchange rate" do
-      assert %{exchange_rate: exchange_rate, timer: _timer} = Impl.tick(initial_exchange_rate())
-      refute exchange_rate === initial_exchange_rate()
-    end
-  end
+      new_exchange_rate = Impl.poll_exchange_rate(initial_exchange_rate())
 
-  describe "&broadcast_total_worth_info/2" do
-    test "broadcasts total worth" do
-      assert {:ok, user} =
-               Accounts.create_user(%{
-                 name: "name 1",
-                 email: "name1@email.com"
-               })
+      assert [
+               EUR_GBP: _,
+               EUR_INR: _,
+               EUR_USD: _,
+               GBP_EUR: _,
+               GBP_INR: _,
+               GBP_USD: _,
+               INR_EUR: _,
+               INR_GBP: _,
+               INR_USD: _,
+               USD_EUR: _,
+               USD_GBP: _,
+               USD_INR: _
+       ] = new_exchange_rate
 
-      assert {:ok, wallet} =
-               Accounts.create_wallet(%{
-                 currency: "INR",
-                 address: "name1@email.com",
-                 amount: "10",
-                 user_id: user.id
-               })
-
-      event = %{currency: "USD", user_id: user.id, wallets: [wallet]}
-
-      assert %{exchange_rate: exchange_rate, timer: _timer} =
-               Impl.broadcast_total_worth_info(event, initial_exchange_rate())
-
-      refute exchange_rate === initial_exchange_rate()
+      refute new_exchange_rate === initial_exchange_rate()
     end
   end
 

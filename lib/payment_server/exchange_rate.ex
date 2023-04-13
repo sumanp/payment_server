@@ -24,7 +24,7 @@ defmodule PaymentServer.ExchangeRate do
     state = Enum.into(currency_pair, %{}, &{&1, "0.00"})
     opts = Keyword.put_new(opts, :name, @server_name)
 
-    GenServer.start_link(ExchangeRate.Server, state, opts)
+    GenServer.start_link(PaymentServer.ExchangeRate.Server, state, opts)
   end
 
   def broadcast_total_worth(%{user_id: user_id} = event, server \\ @server_name) do
