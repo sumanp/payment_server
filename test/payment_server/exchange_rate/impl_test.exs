@@ -1,4 +1,4 @@
-defmodule ExchangeRate.ImplTest do
+defmodule PaymentServer.ExchangeRate.ImplTest do
   use PaymentServer.DataCase, async: true
 
   alias PaymentServer.ExchangeRate.Impl
