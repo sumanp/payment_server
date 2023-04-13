@@ -1,7 +1,7 @@
 defmodule ExchangeRate.ImplTest do
   use PaymentServer.DataCase, async: true
 
-  alias ExchangeRate.Impl
+  alias PaymentServer.ExchangeRate.Impl
   alias PaymentServer.Accounts
 
   describe "&tick/1" do

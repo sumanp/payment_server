@@ -19,7 +19,7 @@ defmodule PaymentServer.Application do
       # Start the Endpoint (http/https)
       PaymentServerWeb.Endpoint,
       {Absinthe.Subscription, PaymentServerWeb.Endpoint},
-      {ExchangeRate, @supported_currencies},
+      {PaymentServer.ExchangeRate, @supported_currencies},
       {PaymentServer.ExchangeRateStore, @supported_currencies}
       # Start a worker by calling: PaymentServer.Worker.start_link(arg)
       # {PaymentServer.Worker, arg}

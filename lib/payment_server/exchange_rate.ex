@@ -1,4 +1,4 @@
-defmodule ExchangeRate do
+defmodule PaymentServer.ExchangeRate do
   alias PaymentServer.Accounts
   alias PaymentServer.ExchangeHelper
 

@@ -1,4 +1,4 @@
-defmodule ExchangeRate.Impl do
+defmodule PaymentServer.ExchangeRate.Impl do
   alias PaymentServer.Worth
   alias PaymentServer.ExchangeRateStore
   require Logger

@@ -7,7 +7,7 @@ defmodule PaymentServerWeb.Schemas.Subscriptions.User do
       arg :currency, non_null(:string)
 
       config fn args, _info ->
-        ExchangeRate.broadcast_total_worth(args)
+        PaymentServer.ExchangeRate.broadcast_total_worth(args)
 
         {:ok, topic: "total_worth:#{args.user_id}"}
       end

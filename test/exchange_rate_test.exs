@@ -5,7 +5,7 @@ defmodule ExchangeRateTest do
 
   setup do
     supported_currencies = Application.fetch_env!(:payment_server, :supported_currencies)
-    {:ok, pid} = ExchangeRate.start_link(supported_currencies, name: nil)
+    {:ok, pid} = PaymentServer.ExchangeRate.start_link(supported_currencies, name: nil)
     %{pid: pid}
   end
 
@@ -28,7 +28,7 @@ defmodule ExchangeRateTest do
       assert true === Process.alive?(pid)
 
       assert :ok ===
-               ExchangeRate.broadcast_total_worth(
+               PaymentServer.ExchangeRate.broadcast_total_worth(
                  %{user_id: user.id, currency: "USD"},
                  pid
                )
